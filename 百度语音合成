@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>JS Bin</title>
+  <script type="text/javascript" src="baidu_tts_cors.js"></script>
+  <script type="text/javascript">
+
+    // 初始化变量
+    var audio = null;
+    var playBtn = null;
+
+    // dom加载完毕回调后注册按钮对象
+    ready(function() {
+        playBtn = document.getElementById('playBtn');
+    });
+
+    // 合成按钮
+    function tts() {
+        let text = document.getElementById('text').value;
+        playBtn.innerText = '准备中';
+
+        // 调用语音合成接口
+        // 参数含义请参考 https://ai.baidu.com/docs#/TTS-API/41ac79a6
+        // 使用Client Credentials获取Access Token需要应用在其服务端发送请求（推荐用POST方法）到百度OAuth2.0授权服务的“ https://openapi.baidu.com/oauth/2.0/token ”地址上，并带上以下参数：
+
+        // grant_type：必须参数，固定为“client_credentials”；
+        // client_id：必须参数，应用的 API Key；
+        // client_secret：必须参数，应用的 Secret Key;
+        audio = btts({
+            tex: text,
+            tok: '24.565c17995cbd25d10cc7ad0ce88d2aec.2592000.1559114617.282335-10330229',
+            spd: 5,
+            pit: 15,
+            vol: 15,
+            per: 3
+        }, {
+            volume: 0.3,
+            autoDestory: true,
+            timeout: 10000,
+            hidden: false,
+            onInit: function (htmlAudioElement) {
+
+            },
+            onSuccess: function(htmlAudioElement) {
+                audio = htmlAudioElement;
+                playBtn.innerText = '播放';
+            },
+            onError: function(text) {
+                alert(text)
+            },
+            onTimeout: function () {
+                alert('timeout')
+            }
+        });
+    }
+
+    // 播放按钮
+    function play() {
+        if (audio === null) {
+            alert('请先点击合成')
+        } else {
+            audio.play();
+        }
+    }
+
+    // 暂停按钮
+    function pause() {
+        if (audio === null) {
+            alert('请先点击合成')
+        } else {
+            audio.pause();
+        }
+    }
+
+    // 取消按钮
+    function cancel() {
+        if (audio === null) {
+            alert('请先点击合成')
+        } else {
+            audio.pause();
+            document.body.removeChild(audio);
+            audio = null;
+            playBtn.innerText = '准备中';
+        }
+    }
+
+    // dom加载完毕回调
+    function ready(callback){
+        var doc = document;
+        if (doc.addEventListener) {
+            doc.addEventListener('DOMContentLoaded', function() {
+                callback();
+            }, false);
+        } else if (doc.attachEvent) {
+            doc.attachEvent('onreadystatechange', function() {
+                if (doc.readyState === 'complete') {
+                    callback();
+                }
+            });
+        }
+    }
+  </script>
+</head>
+<body>
+    <div>
+        <textarea type="text" id='text' value='百度语音合成' style='width: 500px;height: 300px'>我没有很刻意的去想念你，因为我知道，遇到了就应该感恩，路过了就需要释怀。
+        我只是在很多很多的小瞬间，想起你。比如一部电影，一首歌，一句歌词，一条马路和无数个闭上眼睛的瞬间。
+
+茫茫人海中，相识了你，是一种缘份，只希望用我的真诚，换取你的真情。
+
+不敢把所有情绪都告诉你，因为所有情绪都与你有关，说出来就像是在对你表白。
+
+想你了，却不敢联系你！ 爱你了，却不敢告诉你！ 恨你了，却更忘不了你！ 这就是爱！
+
+从看到你的那一刻起，我的心跳就告诉我你是我今生等待的人，是你给了我勇气和动力，我会用一生的努力来呵护这份心动的。
+
+我改变过两次，一次是你的到来；另一次是你的离去~
+
+有时候我真想忘了你，只记得这个世界，然而，我常常忘了整个世界，只记得你。
+
+有一种爱，明明是深爱，却说不出来。有一种爱，明明想放手，却无法离弃。有一种爱，明知是煎熬，却又躲不开。有一种爱，明知无前路，心却早已收不回来。
+
+我说不出来为什么爱你， 但我知道，你就是我不爱别人的理由。
+
+做事总三分钟热度的我，却爱了你这么久，平常总健忘丢三落四的我，却把你记那么清。并不是你长得好看我才喜欢你，而是你给我一种所有人都给不了的感觉
+
+看著你的眼，我看见了大海，蓝天;更看到了美丽的未来！
+
+没有你的时侯,色彩是单一的,没有你的时侯,饭菜是无味的,没有你的时侯,我是空心的!
+
+遇到你之前，世界是荒原；遇到你之后，世界是乐园。过去的岁月，像一缕轻烟，未来的无限生涯，因你而幸福无边。嫁给我！
+
+我不小心把"我爱你"误发给你了。如果你接受那就储存起来，如果你不接受，就把这三个字返发给我。
+
+你是我最在意的心事。</textarea>
+        <button onclick='tts()'>合成</button>
+        <button onclick='play()' id='playBtn'>准备中</button>
+        <button onclick='pause()'>暂停</button>
+        <button onclick='cancel()'>取消</button>
+    </div>
+</body>
+</html>
